@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { IconPlus } from "@tabler/icons-react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -51,8 +51,23 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+interface Product {
+  _id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  subCategory: string;
+  bestSeller: boolean;
+  sizes: {
+    size: "S" | "M" | "L" | "XL" | "XXL";
+    stock: number;
+  }[];
+  images: string[]; 
+}
+
 interface AddProductDialogProps {
-  onAdd: (newProduct: any) => void;
+  onAdd: (newProduct: Product) => void;
 }
 
 export function AddProductDialog({ onAdd }: AddProductDialogProps) {
@@ -96,7 +111,7 @@ export function AddProductDialog({ onAdd }: AddProductDialogProps) {
         setValue(`sizes.${index}.enabled`, true);
       }
     });
-  }, [watchedSizes, setValue]);
+  }, [watchedSizes]);
 
   const removeImage = (index: number) => {
     const updatedFiles = fileList.filter((_, i) => i !== index);
@@ -156,8 +171,12 @@ export function AddProductDialog({ onAdd }: AddProductDialogProps) {
       } else {
         toast.error(result.message || "Failed to add product");
       }
-    } catch (err: any) {
-      toast.error(err.message || "An unexpected error occurred");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     }
   };
 
@@ -280,13 +299,6 @@ export function AddProductDialog({ onAdd }: AddProductDialogProps) {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
               {sizesEnum.map((size, idx) => {
                 const enabled = watch(`sizes.${idx}.enabled`);
-                const stock = watch(`sizes.${idx}.stock`);
-
-                useEffect(() => {
-                  if (stock > 0 && !enabled) {
-                    setValue(`sizes.${idx}.enabled`, true);
-                  }
-                }, [stock, enabled, idx, setValue]);
 
                 return (
                   <div
@@ -333,7 +345,7 @@ export function AddProductDialog({ onAdd }: AddProductDialogProps) {
               control={control}
               name="images"
               rules={{
-                validate: (files) =>
+                validate: () =>
                   (fileList.length > 0 && fileList.length <= 4) ||
                   "You must upload between 1 and 4 images.",
               }}

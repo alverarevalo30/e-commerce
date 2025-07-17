@@ -4,11 +4,9 @@ import { useEffect } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
-import { AppSidebar } from "@/components/Sidebar";
 import { ChartAreaInteractive } from "@/components/ChartArea";
 import { SectionCards } from "@/components/SectionCards";
 import { SiteHeader } from "@/components/SiteHeader";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -19,7 +17,7 @@ export default function Dashboard() {
       router.replace("/login");
       return;
     }
-  }, []);
+  });
 
   return (
     <>

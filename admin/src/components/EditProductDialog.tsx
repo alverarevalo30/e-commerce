@@ -8,7 +8,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { IconEdit, IconPencil } from "@tabler/icons-react";
+import { IconPencil } from "@tabler/icons-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const schema = z.object({
@@ -48,9 +47,24 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+interface Product {
+  _id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  subCategory: string;
+  bestSeller?: boolean;
+  sizes: {
+    size: "S" | "M" | "L" | "XL" | "XXL";
+    stock: number;
+  }[];
+  images: string[];
+}
+
 interface EditProductDialogProps {
-  product: any;
-  onUpdate: (updatedProduct: any) => void;
+  product: Product;
+  onUpdate: (updatedProduct: Product) => void;
 }
 
 export function EditProductDialog({
@@ -59,7 +73,7 @@ export function EditProductDialog({
 }: EditProductDialogProps) {
   const [open, setOpen] = useState(false);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>(
-    product.image || []
+    product.images || []
   );
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
 
@@ -70,7 +84,6 @@ export function EditProductDialog({
     handleSubmit,
     control,
     setValue,
-    reset,
     watch,
     formState: { errors },
   } = useForm<FormValues>({
@@ -82,7 +95,7 @@ export function EditProductDialog({
       category: product.category,
       subCategory: product.subCategory,
       sizes: sizesEnum.map((size) => {
-        const matched = product.sizes?.find((s: any) => s.size === size);
+        const matched = product.sizes?.find((s) => s.size === size);
         return {
           size: size as FormValues["sizes"][number]["size"],
           stock: matched?.stock ?? 0,
@@ -102,7 +115,7 @@ export function EditProductDialog({
         setValue(`sizes.${index}.enabled`, true);
       }
     });
-  }, [watchedSizes, setValue]);
+  }, [watchedSizes]);
 
   const removeExistingImage = (index: number) => {
     const updated = [...existingImageUrls];
@@ -124,7 +137,7 @@ export function EditProductDialog({
       if (!token) throw new Error("Missing auth token");
 
       const formData = new FormData();
-      formData.append("id", product._id);
+      formData.append("id", product._id.toString());
       formData.append("name", data.name);
       formData.append("description", data.description);
       formData.append("price", data.price.toString());
@@ -167,8 +180,12 @@ export function EditProductDialog({
       } else {
         toast.error(result.message || "Update failed");
       }
-    } catch (err: any) {
-      toast.error(err.message || "An unexpected error occurred");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     }
   };
 
@@ -281,13 +298,6 @@ export function EditProductDialog({
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
               {sizesEnum.map((size, idx) => {
                 const enabled = watch(`sizes.${idx}.enabled`);
-                const stock = watch(`sizes.${idx}.stock`);
-
-                useEffect(() => {
-                  if (stock > 0 && !enabled) {
-                    setValue(`sizes.${idx}.enabled`, true);
-                  }
-                }, [stock, enabled, idx, setValue]);
 
                 return (
                   <div
@@ -334,12 +344,12 @@ export function EditProductDialog({
               control={control}
               name="images"
               rules={{
-                validate: (files) =>
+                validate: () =>
                   (existingImageUrls.length + newImageFiles.length > 0 &&
                     existingImageUrls.length + newImageFiles.length <= 4) ||
                   "You must upload between 1 and 4 images.",
               }}
-              render={({ field }) => (
+              render={({}) => (
                 <Input
                   type="file"
                   multiple

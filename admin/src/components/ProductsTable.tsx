@@ -14,7 +14,6 @@ import {
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
-  IconEdit,
   IconLayoutColumns,
   IconSearch,
   IconTrash,
@@ -68,7 +67,7 @@ export const schema = z.object({
   name: z.string(),
   description: z.string(),
   price: z.number(),
-  image: z.array(z.string()),
+  images: z.array(z.string()),
   category: z.string(),
   subCategory: z.string(),
   sizes: z.array(
@@ -140,21 +139,24 @@ export function ProductsTable({
       } else {
         toast.error(response.data.message || "Failed to delete product.");
       }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(
-        error?.response?.data?.message || "Something went wrong while deleting."
-      );
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error);
+        toast.error(error.message || "Something went wrong while deleting.");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     }
   };
+
+  const [currentIndex, setCurrentIndex] = React.useState(0);
 
   const columns: ColumnDef<z.infer<typeof schema>>[] = [
     {
       accessorKey: "image",
       header: "Images",
       cell: ({ row }) => {
-        const images: string[] = row.original.image || [];
-        const [currentIndex, setCurrentIndex] = React.useState(0);
+        const images: string[] = row.original.images || [];
 
         if (!images.length) {
           return (
@@ -284,7 +286,13 @@ export function ProductsTable({
         return (
           <div className="flex items-center gap-2">
             <EditProductDialog
-              product={row.original}
+              product={{
+                ...row.original,
+                sizes: row.original.sizes.map((s) => ({
+                  size: s.size as "S" | "M" | "L" | "XL" | "XXL",
+                  stock: s.stock,
+                })),
+              }}
               onUpdate={(updatedProduct) => {
                 setData((prev) =>
                   prev.map((product) =>

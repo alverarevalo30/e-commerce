@@ -5,10 +5,8 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-import { AppSidebar } from "@/components/Sidebar";
 import { OrdersTable } from "@/components/OrdersTable";
 import { SiteHeader } from "@/components/SiteHeader";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function Orders() {
   const router = useRouter();
@@ -52,7 +50,7 @@ export default function Orders() {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  });
 
   if (loading) {
     return (

@@ -5,7 +5,7 @@ import {
   IconLayoutDashboard,
   IconPackage,
   IconShoppingCart,
-  IconUsers,
+  /* IconUsers, */
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/NavMain";

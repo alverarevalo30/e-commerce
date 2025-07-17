@@ -61,16 +61,20 @@ export function LoginForm({
 
       if (response.data.success) {
         const token = response.data.token;
-        localStorage.setItem("authToken", token)
+        localStorage.setItem("authToken", token);
         toast.success("Login successful!");
         router.push("/");
       } else {
         toast.error(response.data.message || "Login failed. Please try again.");
         setLoginError(true);
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Something went wrong");
-      setLoginError(true);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || "Something went wrong");
+        setLoginError(true);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     }
   };
 

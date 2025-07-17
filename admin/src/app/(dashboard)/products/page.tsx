@@ -5,10 +5,8 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-import { AppSidebar } from "@/components/Sidebar";
 import { ProductsTable } from "@/components/ProductsTable";
 import { SiteHeader } from "@/components/SiteHeader";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function Products() {
   const router = useRouter();
@@ -45,7 +43,7 @@ export default function Products() {
     };
 
     fetchProducts();
-  }, []);
+  });
 
   if (loading) {
     return (

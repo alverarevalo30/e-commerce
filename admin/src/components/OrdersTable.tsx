@@ -99,8 +99,12 @@ export function OrdersTable({
     pageSize: 10,
   });
 
-  const formatDate = (isoString: any) => {
+  const formatDate = (isoString?: string) => {
+    if (!isoString) return "Invalid Date";
+
     const date = new Date(isoString);
+    if (isNaN(date.getTime())) return "Invalid Date";
+
     return date.toLocaleString("en-US", {
       year: "numeric",
       month: "short",
@@ -183,6 +187,8 @@ export function OrdersTable({
     }
   };
 
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
   return (
     <div className=" flex-1 outline-none relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
       <div className="overflow-hidden">
@@ -211,8 +217,6 @@ export function OrdersTable({
                         price: item.price,
                       }))
                     );
-
-                    const [currentIndex, setCurrentIndex] = React.useState(0);
 
                     if (!imageData.length) {
                       return (
@@ -298,7 +302,7 @@ export function OrdersTable({
                   </p>
 
                   <div className="space-y-1">
-                    {order.items.map((item, idx) => (
+                    {order.items.map((item) => (
                       <p key={`${item._id}-${item.size}`}>
                         <strong>{item.name}</strong> x{item.quantity}{" "}
                         {item.size}
