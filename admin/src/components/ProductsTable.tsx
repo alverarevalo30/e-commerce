@@ -113,6 +113,8 @@ export function ProductsTable({
     );
   }, [data, activeTab]);
 
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
   const handleDelete = async (product: z.infer<typeof schema>) => {
     try {
       const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -148,8 +150,6 @@ export function ProductsTable({
       }
     }
   };
-
-  const [currentIndex, setCurrentIndex] = React.useState(0);
 
   const columns: ColumnDef<z.infer<typeof schema>>[] = [
     {

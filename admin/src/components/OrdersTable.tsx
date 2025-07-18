@@ -137,6 +137,8 @@ export function OrdersTable({
     table.getFilteredRowModel().rows.length !==
     table.getPreFilteredRowModel().rows.length;
 
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
   const token = Cookies.get("admin-token");
   if (!token) {
     router.replace("/login");
@@ -186,8 +188,6 @@ export function OrdersTable({
       toast.error("Something went wrong while updating status");
     }
   };
-
-  const [currentIndex, setCurrentIndex] = React.useState(0);
 
   return (
     <div className=" flex-1 outline-none relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Forever_Logo from "../assets/logo.png";
+import Link from "next/link";
 
 const data = {
   user: {
@@ -63,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="/">
+              <Link href="/">
                 <div className="relative w-1/2 aspect-[332/138] ml-2">
                   <Image
                     src={Forever_Logo}
@@ -72,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     className="object-contain"
                   />
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

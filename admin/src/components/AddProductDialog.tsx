@@ -111,7 +111,7 @@ export function AddProductDialog({ onAdd }: AddProductDialogProps) {
         setValue(`sizes.${index}.enabled`, true);
       }
     });
-  }, [watchedSizes]);
+  }, [watchedSizes, setValue]);
 
   const removeImage = (index: number) => {
     const updatedFiles = fileList.filter((_, i) => i !== index);

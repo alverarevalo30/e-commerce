@@ -115,7 +115,7 @@ export function EditProductDialog({
         setValue(`sizes.${index}.enabled`, true);
       }
     });
-  }, [watchedSizes]);
+  }, [watchedSizes, setValue]);
 
   const removeExistingImage = (index: number) => {
     const updated = [...existingImageUrls];
